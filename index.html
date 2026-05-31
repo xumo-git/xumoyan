@@ -117,23 +117,42 @@
 
   function initLilies() {
     stalks = [];
-    var n = 10 + Math.floor(Math.random() * 8);
-    var margin = 30;
-    for (var i = 0; i < n; i++) {
+
+    var cx = W / 2, cy = H * 0.35;
+    var czW = 640, czH = 620;
+    var czL = cx - czW / 2, czR = cx + czW / 2;
+    var czT = cy - czH / 2, czB = cy + czH / 2;
+
+    function avoidCenter(x, y) {
+      return x > czL - 50 && x < czR + 50 && y > czT - 30 && y < czB + 30;
+    }
+
+    var n = 30 + Math.floor(Math.random() * 20);
+    var attempts = 0;
+
+    while (stalks.length < n && attempts < 300) {
+      attempts++;
       var x, y;
       var zone = Math.random();
-      if (zone < 0.6) {
-        x = margin + Math.random() * (W - margin * 2);
-        y = H + 10 + Math.random() * 40;
-      } else if (zone < 0.8) {
-        x = -10 - Math.random() * 40;
-        y = H * 0.3 + Math.random() * H * 0.5;
+      if (zone < 0.45) {
+        x = 20 + Math.random() * (W - 40);
+        y = H + 10 + Math.random() * 30;
+      } else if (zone < 0.65) {
+        x = -20 - Math.random() * 50;
+        y = 40 + Math.random() * (H - 80);
+      } else if (zone < 0.85) {
+        x = W + 20 + Math.random() * 50;
+        y = 40 + Math.random() * (H - 80);
       } else {
-        x = W + 10 + Math.random() * 40;
-        y = H * 0.3 + Math.random() * H * 0.5;
+        x = 20 + Math.random() * (W - 40);
+        y = -10 - Math.random() * 30;
       }
-      var h = 100 + Math.random() * 180;
-      var fn = 3 + Math.floor(Math.random() * 5);
+
+      var h = 80 + Math.random() * 200;
+      var topY = y - h;
+      if (avoidCenter(x, topY)) continue;
+
+      var fn = 2 + Math.floor(Math.random() * 6);
       stalks.push(makeLilyStalk(x, y, h, fn));
     }
   }
@@ -466,63 +485,98 @@
     ctx.restore();
   }
 
-  // ─── 飞扬花瓣 ───
+  // ─── 落花（大朵飘落） ───
 
-  var fallingPetals = [];
+  var fallingFlowers = [];
 
-  function makeFallingPetal() {
+  function makeFallingFlower() {
     return {
-      x: Math.random() * W,
-      y: -20 - Math.random() * 40,
-      vx: (Math.random() - 0.5) * 0.5,
-      vy: 0.3 + Math.random() * 0.5,
+      x: Math.random() * (W + 100) - 50,
+      y: -30 - Math.random() * 80,
+      vx: (Math.random() - 0.5) * 0.8,
+      vy: 0.4 + Math.random() * 0.7,
       rot: Math.random() * Math.PI * 2,
-      rv: (Math.random() - 0.5) * 0.02,
-      size: 6 + Math.random() * 8,
+      rv: (Math.random() - 0.5) * 0.03,
+      size: 18 + Math.random() * 28,
       phase: Math.random() * 100,
+      swayAmp: 0.3 + Math.random() * 0.6,
+      swayFreq: 0.3 + Math.random() * 0.5,
+      alpha: 0.2 + Math.random() * 0.35,
     };
   }
 
-  function initFallingPetals() {
-    fallingPetals = [];
-    for (var i = 0; i < 30; i++) {
-      var p = makeFallingPetal();
-      p.y = Math.random() * H;
-      fallingPetals.push(p);
+  function initFallingFlowers() {
+    fallingFlowers = [];
+    for (var i = 0; i < 50; i++) {
+      var f = makeFallingFlower();
+      f.y = Math.random() * H;
+      fallingFlowers.push(f);
     }
   }
 
-  function updateFallingPetals() {
-    fallingPetals.forEach(function(p) {
-      p.x += p.vx + Math.sin(Date.now() * 0.001 * 0.5 + p.phase) * 0.3;
-      p.y += p.vy;
-      p.rot += p.rv;
-      if (p.y > H + 20) {
-        p.y = -20;
-        p.x = Math.random() * W;
+  function updateFallingFlowers() {
+    var t = Date.now() * 0.001;
+    fallingFlowers.forEach(function(f) {
+      f.x += f.vx + Math.sin(t * f.swayFreq + f.phase) * f.swayAmp;
+      f.y += f.vy;
+      f.rot += f.rv;
+      if (f.y > H + 50) {
+        f.y = -50;
+        f.x = Math.random() * (W + 100) - 50;
       }
-      if (p.x < -30) p.x = W + 10;
-      if (p.x > W + 30) p.x = -10;
+      if (f.x < -60) f.x = W + 40;
+      if (f.x > W + 60) f.x = -40;
     });
   }
 
-  function drawFallingPetal(p) {
+  function drawFallingFlower(f) {
+    var t = Date.now() * 0.001;
     ctx.save();
-    ctx.translate(p.x, p.y);
-    ctx.rotate(p.rot);
+    ctx.translate(f.x, f.y);
+    ctx.rotate(f.rot);
 
-    var len = p.size;
-    var w = len * 0.25;
+    var sz = f.size;
+    ctx.globalAlpha = f.alpha;
+
+    for (var i = 0; i < 4; i++) {
+      var a = (i / 4) * Math.PI * 2 + Math.sin(t * 0.5 + f.phase + i) * 0.05;
+      ctx.save();
+      ctx.rotate(a);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.quadraticCurveTo(sz * 0.9, -sz * 0.18, sz * 1.1, sz * 0.05);
+      ctx.quadraticCurveTo(sz * 0.9, sz * 0.22, 0, 0);
+      ctx.fillStyle = '#cc1a2b';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(200,60,70,0.25)';
+      ctx.lineWidth = 0.3;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    for (var i = 0; i < 4; i++) {
+      var a = (i / 4) * Math.PI * 2 + Math.sin(t * 0.3 + f.phase * 0.7 + i * 0.5) * 0.08;
+      ctx.save();
+      ctx.rotate(a);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(0, -sz * 1.6);
+      ctx.strokeStyle = 'rgba(180,20,30,0.25)';
+      ctx.lineWidth = 0.4;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(0, -sz * 1.6, 0.8, 0, Math.PI * 2);
+      ctx.fillStyle = '#220808';
+      ctx.fill();
+      ctx.restore();
+    }
 
     ctx.beginPath();
-    ctx.moveTo(0, -w);
-    ctx.quadraticCurveTo(len * 0.6, -w * 0.3, len, 0);
-    ctx.quadraticCurveTo(len * 0.6, w * 0.3, 0, w);
-    ctx.closePath();
-    ctx.fillStyle = R;
-    ctx.globalAlpha = 0.2 + 0.15 * Math.sin(Date.now() * 0.001 + p.phase);
+    ctx.arc(0, 0, sz * 0.06, 0, Math.PI * 2);
+    ctx.fillStyle = '#220808';
     ctx.fill();
 
+    ctx.globalAlpha = 1;
     ctx.restore();
   }
 
@@ -558,7 +612,7 @@
   function init() {
     initLilies();
     initSnakes();
-    initFallingPetals();
+    initFallingFlowers();
   }
 
   // ─── 主循环 ───
@@ -587,8 +641,8 @@
       drawLilyStalk(s, time + 1000);
     });
 
-    updateFallingPetals();
-    fallingPetals.forEach(function(p) { drawFallingPetal(p); });
+    updateFallingFlowers();
+    fallingFlowers.forEach(function(f) { drawFallingFlower(f); });
 
     drawGroundMist();
 
