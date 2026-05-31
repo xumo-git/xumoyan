@@ -1,0 +1,208 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Inter:wght@300;400;500&display=swap');
+
+:root {
+  --bg-page: #0a0808;
+  --bg-card: #12100e;
+  --bg-elevated: #1a1715;
+  --bg-hover: #24211e;
+  --text: #e8e3dc;
+  --text-dim: #a5a099;
+  --text-muted: #736e68;
+  --red: #c23b22;
+  --red-light: #d44a30;
+  --red-dim: #8a2a18;
+  --gold: #b8963e;
+  --gold-light: #c9a85a;
+  --gold-dim: #8a7030;
+  --border: #24211e;
+  --border-light: #34302c;
+  --font-serif: 'Noto Serif SC', 'Songti SC', 'STSong', serif;
+  --font-sans: 'Inter', 'PingFang SC', -apple-system, sans-serif;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-serif);
+  background: var(--bg-page);
+  color: var(--text);
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#spider-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.portal-wrapper {
+  max-width: 580px;
+  margin: 0 auto;
+  padding: 50px 20px 80px;
+  position: relative;
+  z-index: 1;
+}
+
+.portal-header {
+  text-align: center;
+  padding: 30px 0 40px;
+}
+
+.portal-header .logo-chinese {
+  font-size: 52px;
+  font-weight: 700;
+  letter-spacing: 12px;
+  color: var(--red);
+  margin-bottom: 6px;
+}
+
+.portal-header .logo-sub {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  color: var(--gold-light);
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.portal-header .logo-desc {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-family: var(--font-sans);
+  letter-spacing: 3px;
+}
+
+.portal-header .hero-divider {
+  color: var(--red-dim);
+  font-size: 14px;
+  letter-spacing: 8px;
+  margin-top: 20px;
+}
+
+.books {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 30px;
+}
+
+.book-card {
+  display: flex;
+  align-items: stretch;
+  gap: 20px;
+  padding: 22px 24px;
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+.book-card:hover {
+  background: var(--bg-elevated);
+  border-color: var(--border-light);
+  transform: translateY(-2px);
+}
+
+.book-card.disabled {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
+}
+
+.card-number {
+  font-family: var(--font-serif);
+  font-size: 34px;
+  color: var(--gold-dim);
+  min-width: 44px;
+  text-align: center;
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-content {
+  flex: 1;
+}
+
+.card-content h2 {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+  letter-spacing: 4px;
+}
+
+.book-card:hover .card-content h2 {
+  color: var(--red);
+}
+
+.card-subtitle {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--gold-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.card-desc {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.card-link {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--red);
+  letter-spacing: 1px;
+  opacity: 0;
+  transition: all 0.3s;
+}
+
+.book-card:hover .card-link {
+  opacity: 1;
+}
+
+.portal-footer {
+  text-align: center;
+  padding: 40px 20px;
+  margin-top: 40px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  position: relative;
+  z-index: 1;
+}
+
+.portal-footer .author { color: var(--gold-dim); }
+.portal-footer .meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  opacity: 0.6;
+}
+
+@media (max-width: 600px) {
+  .portal-wrapper { padding: 30px 16px 60px; }
+  .portal-header .logo-chinese { font-size: 38px; letter-spacing: 8px; }
+  .book-card { padding: 18px; gap: 14px; }
+  .card-number { font-size: 22px; min-width: 30px; }
+  .card-content h2 { font-size: 18px; }
+}
